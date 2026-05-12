@@ -1,0 +1,289 @@
+{
+  "happy_path": [
+    {
+      "id": "HP-01",
+      "title": "Successful login with valid credentials",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "User is redirected to /dashboard and session is created"
+    },
+    {
+      "id": "HP-02",
+      "title": "Successful login with special characters in password",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Enter valid password with special characters (e.g., P@ssw0rd!)",
+        "Click Login button"
+      ],
+      "expected": "User is redirected to /dashboard and session is created"
+    },
+    {
+      "id": "HP-03",
+      "title": "Successful login with long password",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Enter long password (e.g., VeryLongPassword123WithNumbers)",
+        "Click Login button"
+      ],
+      "expected": "User is redirected to /dashboard and session is created"
+    }
+  ],
+  "edge_cases": [
+    {
+      "id": "EC-01",
+      "title": "Login with minimum length password (8 characters)",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Enter password with exactly 8 characters (e.g., Pass1234)",
+        "Click Login button"
+      ],
+      "expected": "Password is accepted and login proceeds if email and password are correct"
+    },
+    {
+      "id": "EC-02",
+      "title": "Login with email containing subdomain",
+      "steps": [
+        "Navigate to login page",
+        "Enter email with subdomain (e.g., user@mail.example.com)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Email is accepted as valid format and login proceeds"
+    },
+    {
+      "id": "EC-03",
+      "title": "Login with email containing plus addressing",
+      "steps": [
+        "Navigate to login page",
+        "Enter email with plus addressing (e.g., user+tag@example.com)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Email is accepted as valid format and login proceeds"
+    },
+    {
+      "id": "EC-04",
+      "title": "Login with uppercase letters in email",
+      "steps": [
+        "Navigate to login page",
+        "Enter email with uppercase (e.g., User@Example.COM)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Email is accepted (case-insensitive) and login proceeds"
+    },
+    {
+      "id": "EC-05",
+      "title": "Account lock after exactly 5 failed attempts",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email",
+        "Enter invalid password and click Login",
+        "Repeat step 3 four more times (total 5 attempts)",
+        "Attempt login again with correct password"
+      ],
+      "expected": "After 5th failed attempt, account is locked. 6th attempt shows account locked message"
+    },
+    {
+      "id": "EC-06",
+      "title": "Account unlock after 15 minutes of lock",
+      "steps": [
+        "Lock account by failing 5 login attempts",
+        "Wait 15 minutes",
+        "Attempt login with valid credentials"
+      ],
+      "expected": "Account is unlocked and user can log in successfully"
+    },
+    {
+      "id": "EC-07",
+      "title": "Login attempt after 14 minutes of lock",
+      "steps": [
+        "Lock account by failing 5 login attempts",
+        "Wait 14 minutes",
+        "Attempt login with valid credentials"
+      ],
+      "expected": "Account is still locked and login attempt fails"
+    },
+    {
+      "id": "EC-08",
+      "title": "Email with international domain",
+      "steps": [
+        "Navigate to login page",
+        "Enter email with international domain (e.g., user@example.co.uk)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Email is accepted as valid format and login proceeds"
+    }
+  ],
+  "negative_cases": [
+    {
+      "id": "NC-01",
+      "title": "Login with invalid email format - missing @",
+      "steps": [
+        "Navigate to login page",
+        "Enter email without @ (e.g., userexample.com)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-02",
+      "title": "Login with invalid email format - missing domain",
+      "steps": [
+        "Navigate to login page",
+        "Enter email without domain (e.g., user@)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-03",
+      "title": "Login with password less than 8 characters",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Enter password with 7 characters (e.g., Pass123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-04",
+      "title": "Login with empty email field",
+      "steps": [
+        "Navigate to login page",
+        "Leave email field empty",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-05",
+      "title": "Login with empty password field",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Leave password field empty",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-06",
+      "title": "Login with both fields empty",
+      "steps": [
+        "Navigate to login page",
+        "Leave both email and password fields empty",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-07",
+      "title": "Login with correct email but wrong password",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid registered email (e.g., user@example.com)",
+        "Enter incorrect password (e.g., WrongPassword123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without revealing email exists"
+    },
+    {
+      "id": "NC-08",
+      "title": "Login with unregistered email and valid password format",
+      "steps": [
+        "Navigate to login page",
+        "Enter unregistered email (e.g., nonexistent@example.com)",
+        "Enter valid password format (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without revealing email doesn't exist"
+    },
+    {
+      "id": "NC-09",
+      "title": "Login with SQL injection attempt in email",
+      "steps": [
+        "Navigate to login page",
+        "Enter SQL injection payload in email (e.g., admin'--)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Login fails with generic error message. No SQL injection executed"
+    },
+    {
+      "id": "NC-10",
+      "title": "Login with XSS attempt in password",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Enter XSS payload in password (e.g., <script>alert('xss')</script>)",
+        "Click Login button"
+      ],
+      "expected": "Login fails with generic error message. No script is executed"
+    },
+    {
+      "id": "NC-11",
+      "title": "Account locked message does not reveal lock duration",
+      "steps": [
+        "Lock account by failing 5 login attempts",
+        "Attempt login with valid credentials"
+      ],
+      "expected": "Account locked message is displayed without revealing exact unlock time"
+    },
+    {
+      "id": "NC-12",
+      "title": "Login with spaces in email",
+      "steps": [
+        "Navigate to login page",
+        "Enter email with spaces (e.g., user @example.com)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-13",
+      "title": "Login with very long email",
+      "steps": [
+        "Navigate to login page",
+        "Enter extremely long email (e.g., verylongemailaddress...(254+ characters)@example.com)",
+        "Enter valid password (e.g., Password123)",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed. Email length validation is enforced"
+    },
+    {
+      "id": "NC-14",
+      "title": "Login with password containing only spaces",
+      "steps": [
+        "Navigate to login page",
+        "Enter valid email (e.g., user@example.com)",
+        "Enter 8 spaces as password",
+        "Click Login button"
+      ],
+      "expected": "Generic error message displayed: 'Invalid email or password' without field specification"
+    },
+    {
+      "id": "NC-15",
+      "title": "Brute force attack - attempt 100 logins",
+      "steps": [
+        "Navigate to login page",
+        "Attempt login with invalid credentials 100 times automatically",
+        "Monitor account status"
+      ],
+      "expected": "Account is locked after 5 attempts. Subsequent attempts are rejected immediately. No rate-limiting bypass"
+    }
+  ]
+}

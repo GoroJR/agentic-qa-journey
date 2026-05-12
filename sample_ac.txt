@@ -1,0 +1,17 @@
+User Story: Login with email and password
+
+Acceptance Criteria:
+- User can log in with a valid email and password
+- Email field must be a valid email format
+- Password must be at least 8 characters
+- After 5 failed attempts, account is locked for 15 minutes
+- Successful login redirects to /dashboard
+- Failed login shows error message without revealing which field was wrongUser Story: Login with email and password
+
+Acceptance Criteria:
+- User can log in with a valid email and password
+- Email field must be a valid email format
+- Password must be at least 8 characters
+- After 5 failed attempts, account is locked for 15 minutes
+- Successful login redirects to /dashboard
+- Failed login shows error message without revealing which field was wrong
