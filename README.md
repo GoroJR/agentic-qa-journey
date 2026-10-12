@@ -53,9 +53,38 @@ Acceptance Criteria:
 
 A few real-world LLM engineering lessons baked into this code:
 
-- **Defensive JSON parsing** — even with explicit instructions, Claude occasionally wraps responses in markdown fences. The parser strips them before `json.loads()`.
+- **Structured outputs over defensive parsing** — v1 stripped markdown fences before `json.loads()` because Claude occasionally wrapped JSON in them. v2 uses `client.messages.parse()` with a Pydantic schema (`schemas.py`), so the response is constrained to the schema and validated on arrival. Schema violations, refusals and truncated responses become clear errors instead of crashes.
 - **stdout/stderr separation** — status messages go to stderr, structured output goes to stdout. Lets you pipe JSON to a file with `>` without polluting it.
 - **No emojis in CLI output** — Windows `cp1252` codec can't encode many Unicode characters. Plain ASCII is bulletproof across environments and CI/CD.
+
+## Evaluating the generator
+
+Generating test cases is easy. Knowing whether they're *good* is the hard part. The `evals/` folder measures that.
+
+**Golden set** (`evals/golden/`): 5 features (login, password reset, promo code, search with filters, file upload), each with acceptance criteria and 10-11 expected scenarios a senior QA would insist on: boundaries, lockouts, enumeration, injection.
+
+**Three layers of scoring:**
+
+| Layer | What it checks | How |
+|---|---|---|
+| Schema | Output matches the TestSuite structure | Pydantic + structured outputs |
+| Structure | ID format, duplicates, empty steps or expected results | Deterministic code (`evals/checks.py`) |
+| Quality | Which expected scenarios are genuinely covered; specificity, correctness, non-duplication (1-5) | LLM-as-judge (`evals/judge.py`) |
+
+The judge has to cite test case IDs that really exist in the suite. Otherwise the scenario counts as missed, so it can't hand out credit for coverage that isn't there.
+
+**Run it** (needs an API key in `.env`):
+
+```bash
+python -m evals.run_evals                                  # all cases
+python -m evals.run_evals --cases login promo_code         # a subset
+python -m evals.run_evals --repeats 3                      # measure run-to-run variance
+python -m evals.run_evals --generator-model claude-haiku-5-5   # compare models
+```
+
+Each run prints a summary table and writes a full JSON report to `evals/results/`, including per-scenario judge notes and the cost of the run.
+
+**Offline tests** (no API key, run in CI): `python -m pytest`
 
 ## Why this matters
 
@@ -66,7 +95,7 @@ Test case design is one of the highest-leverage tasks in QA — and one of the m
 - [ ] Web UI (Streamlit)
 - [ ] Direct Jira / Azure DevOps ticket integration
 - [ ] Output formats: Gherkin, TestRail CSV, xUnit
-- [ ] Coverage scoring against original requirements
+- [x] Coverage scoring against original requirements (`evals/`)
 - [ ] Playwright test stub generation from test cases
 
 ## Author

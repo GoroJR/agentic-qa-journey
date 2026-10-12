@@ -1,0 +1,62 @@
+{
+  "id": "search_filters",
+  "title": "Product search with filters and pagination",
+  "acceptance_criteria": "User Story: Search the product catalogue\n\nAcceptance Criteria:\n- Search matches product names containing the search term, ignoring case\n- Results can be filtered by category and by price range\n- Results show 20 items per page with next/previous controls\n- Searching with no matches shows \"No products found\"\n- Search terms longer than 100 characters are rejected with a validation message\n- Leading and trailing spaces in the search term are ignored",
+  "expected_scenarios": [
+    {
+      "id": "S1",
+      "category": "happy",
+      "description": "Search term returns products whose names contain it, case-insensitive"
+    },
+    {
+      "id": "S2",
+      "category": "happy",
+      "description": "Category filter narrows results correctly"
+    },
+    {
+      "id": "S3",
+      "category": "happy",
+      "description": "Price range filter narrows results correctly, including the boundary prices"
+    },
+    {
+      "id": "S4",
+      "category": "edge",
+      "description": "Exactly 20 results shows one page; 21 results shows a second page"
+    },
+    {
+      "id": "S5",
+      "category": "edge",
+      "description": "Previous control is unavailable on page 1 and next is unavailable on the last page"
+    },
+    {
+      "id": "S6",
+      "category": "negative",
+      "description": "No matches shows 'No products found'"
+    },
+    {
+      "id": "S7",
+      "category": "edge",
+      "description": "Search term of exactly 100 characters is accepted (boundary)"
+    },
+    {
+      "id": "S8",
+      "category": "negative",
+      "description": "Search term of 101 characters is rejected with a validation message"
+    },
+    {
+      "id": "S9",
+      "category": "edge",
+      "description": "Leading/trailing spaces are trimmed; whitespace-only search is handled"
+    },
+    {
+      "id": "S10",
+      "category": "negative",
+      "description": "Special characters / injection payloads in the search term are handled safely"
+    },
+    {
+      "id": "S11",
+      "category": "negative",
+      "description": "Invalid price range (min greater than max) is handled"
+    }
+  ]
+}

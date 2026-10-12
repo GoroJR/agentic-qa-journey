@@ -1,0 +1,57 @@
+{
+  "id": "promo_code",
+  "title": "Apply a promo code at checkout",
+  "acceptance_criteria": "User Story: Apply a promo code to my cart\n\nAcceptance Criteria:\n- User can enter one promo code per order on the checkout page\n- A valid code applies its discount and shows the new total\n- Codes are not case sensitive\n- Expired codes show the message \"This code has expired\"\n- Codes with a minimum spend only apply when the cart subtotal meets the minimum\n- The discount can never make the order total negative\n- Removing the code restores the original total",
+  "expected_scenarios": [
+    {
+      "id": "S1",
+      "category": "happy",
+      "description": "Valid code applies discount and updates the total"
+    },
+    {
+      "id": "S2",
+      "category": "edge",
+      "description": "Code entered in different letter case is accepted"
+    },
+    {
+      "id": "S3",
+      "category": "negative",
+      "description": "Expired code shows 'This code has expired'"
+    },
+    {
+      "id": "S4",
+      "category": "edge",
+      "description": "Subtotal exactly equal to the minimum spend allows the code (boundary)"
+    },
+    {
+      "id": "S5",
+      "category": "negative",
+      "description": "Subtotal just below the minimum spend rejects the code"
+    },
+    {
+      "id": "S6",
+      "category": "edge",
+      "description": "Discount larger than the cart value results in a total of 0, not negative"
+    },
+    {
+      "id": "S7",
+      "category": "negative",
+      "description": "Applying a second code to the same order is not allowed"
+    },
+    {
+      "id": "S8",
+      "category": "happy",
+      "description": "Removing the code restores the original total"
+    },
+    {
+      "id": "S9",
+      "category": "negative",
+      "description": "Invalid / nonexistent code is rejected with an error"
+    },
+    {
+      "id": "S10",
+      "category": "edge",
+      "description": "Cart change after applying a code (dropping below minimum) re-evaluates the discount"
+    }
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "id": "file_upload",
+  "title": "Upload a profile picture",
+  "acceptance_criteria": "User Story: Upload a profile picture\n\nAcceptance Criteria:\n- Accepted formats are JPG and PNG\n- Maximum file size is 5 MB\n- Images are resized to 400x400 pixels after upload\n- Uploading a new picture replaces the previous one\n- If the upload fails, the previous picture is kept and an error is shown",
+  "expected_scenarios": [
+    {
+      "id": "S1",
+      "category": "happy",
+      "description": "Valid JPG uploads successfully and becomes the profile picture"
+    },
+    {
+      "id": "S2",
+      "category": "happy",
+      "description": "Valid PNG uploads successfully"
+    },
+    {
+      "id": "S3",
+      "category": "negative",
+      "description": "Unsupported format (e.g. GIF, PDF) is rejected"
+    },
+    {
+      "id": "S4",
+      "category": "edge",
+      "description": "File of exactly 5 MB is accepted (boundary)"
+    },
+    {
+      "id": "S5",
+      "category": "negative",
+      "description": "File just over 5 MB is rejected"
+    },
+    {
+      "id": "S6",
+      "category": "happy",
+      "description": "Uploaded image is resized to 400x400"
+    },
+    {
+      "id": "S7",
+      "category": "happy",
+      "description": "New upload replaces the previous picture"
+    },
+    {
+      "id": "S8",
+      "category": "negative",
+      "description": "Failed upload keeps the previous picture and shows an error"
+    },
+    {
+      "id": "S9",
+      "category": "negative",
+      "description": "File with a renamed extension (e.g. .exe renamed to .jpg) is rejected"
+    },
+    {
+      "id": "S10",
+      "category": "edge",
+      "description": "Non-square or very small images are handled when resizing"
+    }
+  ]
+}

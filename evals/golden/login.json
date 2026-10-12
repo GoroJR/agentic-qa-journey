@@ -1,0 +1,57 @@
+{
+  "id": "login",
+  "title": "Login with email and password",
+  "acceptance_criteria": "User Story: Login with email and password\n\nAcceptance Criteria:\n- User can log in with a valid email and password\n- Email field must be a valid email format\n- Password must be at least 8 characters\n- After 5 failed attempts, account is locked for 15 minutes\n- Successful login redirects to /dashboard\n- Failed login shows error message without revealing which field was wrongUser Story: Login with email and password\n\nAcceptance Criteria:\n- User can log in with a valid email and password\n- Email field must be a valid email format\n- Password must be at least 8 characters\n- After 5 failed attempts, account is locked for 15 minutes\n- Successful login redirects to /dashboard\n- Failed login shows error message without revealing which field was wrong",
+  "expected_scenarios": [
+    {
+      "id": "S1",
+      "category": "happy",
+      "description": "Valid email and password logs the user in"
+    },
+    {
+      "id": "S2",
+      "category": "happy",
+      "description": "Successful login redirects to /dashboard"
+    },
+    {
+      "id": "S3",
+      "category": "negative",
+      "description": "Invalid email format is rejected"
+    },
+    {
+      "id": "S4",
+      "category": "edge",
+      "description": "Password of exactly 8 characters is accepted (boundary)"
+    },
+    {
+      "id": "S5",
+      "category": "negative",
+      "description": "Password of 7 characters is rejected (boundary)"
+    },
+    {
+      "id": "S6",
+      "category": "edge",
+      "description": "Account locks on the 5th failed attempt, not the 4th"
+    },
+    {
+      "id": "S7",
+      "category": "edge",
+      "description": "Locked account cannot log in even with correct password during the 15 minutes"
+    },
+    {
+      "id": "S8",
+      "category": "edge",
+      "description": "Account unlocks after 15 minutes"
+    },
+    {
+      "id": "S9",
+      "category": "negative",
+      "description": "Error message does not reveal whether email or password was wrong"
+    },
+    {
+      "id": "S10",
+      "category": "negative",
+      "description": "Injection attempts (SQL injection / XSS) in login fields are handled safely"
+    }
+  ]
+}

@@ -7,14 +7,15 @@ Author: Erick Rodrigo Jimenez
 Part of: Agentic QA Journey
 """
 
-import os
 import sys
 import json
 from dotenv import load_dotenv
-from anthropic import Anthropic
+from anthropic import Anthropic, APIError
+from pydantic import ValidationError
+
+from schemas import TestSuite
 
 load_dotenv()
-client = Anthropic()
 MODEL = "claude-haiku-4-5"
 
 SYSTEM_PROMPT = """You are a Senior QA Automation Engineer specializing in test case design.
@@ -24,48 +25,46 @@ Given Acceptance Criteria, you generate comprehensive test cases covering:
 2. Edge Cases - boundary conditions, unusual but valid inputs
 3. Negative Cases - invalid inputs, error handling, security concerns
 
-CRITICAL: Respond with ONLY raw JSON. Do NOT wrap in markdown code fences.
-Start your response with { and end with }. No preamble, no explanation, no markdown.
-
-Use this exact schema:
-{
-  "happy_path": [
-    {"id": "HP-01", "title": "...", "steps": ["..."], "expected": "..."}
-  ],
-  "edge_cases": [
-    {"id": "EC-01", "title": "...", "steps": ["..."], "expected": "..."}
-  ],
-  "negative_cases": [
-    {"id": "NC-01", "title": "...", "steps": ["..."], "expected": "..."}
-  ]
-}
+Every acceptance criterion must be covered by at least one test case.
+Use IDs HP-01, HP-02... for happy path, EC-01... for edge cases, NC-01... for negative cases.
+Steps must be concrete and executable, with example input values where relevant.
 """
 
 
-def generate_test_cases(acceptance_criteria: str) -> dict:
-    """Call Claude API with the AC and return parsed JSON test cases."""
-    response = client.messages.create(
-        model=MODEL,
-        max_tokens=4096,
-        system=SYSTEM_PROMPT,
-        messages=[
-            {"role": "user", "content": f"Acceptance Criteria:\n\n{acceptance_criteria}"}
-        ]
-    )
+class GenerationError(Exception):
+    """Raised when the model does not return a usable test suite."""
 
-    raw_text = response.content[0].text.strip()
 
-    if raw_text.startswith("```"):
-        lines = raw_text.split("\n")
-        raw_text = "\n".join(lines[1:-1])
+def generate_test_cases(acceptance_criteria: str, client=None, model: str = MODEL):
+    """Call Claude with the AC and return (TestSuite, usage).
 
+    Structured outputs constrain the response to the TestSuite schema, so no
+    markdown-fence stripping or manual json.loads() is needed.
+    """
+    client = client or Anthropic()
     try:
-        test_cases = json.loads(raw_text)
-    except json.JSONDecodeError:
-        print(f"ERROR: Claude did not return valid JSON.\nRaw output:\n{raw_text}", file=sys.stderr)
-        sys.exit(1)
+        response = client.messages.parse(
+            model=model,
+            max_tokens=16000,
+            system=SYSTEM_PROMPT,
+            messages=[
+                {"role": "user", "content": f"Acceptance Criteria:\n\n{acceptance_criteria}"}
+            ],
+            output_format=TestSuite,
+        )
+    except ValidationError as e:
+        raise GenerationError(f"Response did not match the schema: {e.error_count()} validation error(s).") from e
+    except APIError as e:
+        raise GenerationError(f"API error: {e}") from e
 
-    return test_cases
+    if response.stop_reason == "refusal":
+        raise GenerationError("Model refused the request.")
+    if response.stop_reason == "max_tokens":
+        raise GenerationError("Response hit max_tokens before the test suite was complete.")
+    if response.parsed_output is None:
+        raise GenerationError("Model response could not be parsed into a TestSuite.")
+
+    return response.parsed_output, response.usage
 
 
 def read_acceptance_criteria() -> str:
@@ -88,14 +87,19 @@ def main():
         sys.exit(1)
 
     print("\n[Generating test cases with Claude...]\n", file=sys.stderr)
-    test_cases = generate_test_cases(ac)
+    try:
+        suite, _ = generate_test_cases(ac)
+    except GenerationError as e:
+        print(f"ERROR: {e}", file=sys.stderr)
+        sys.exit(1)
 
-    print(json.dumps(test_cases, indent=2, ensure_ascii=False))
+    print(json.dumps(suite.model_dump(), indent=2, ensure_ascii=False))
 
-    hp = len(test_cases.get("happy_path", []))
-    ec = len(test_cases.get("edge_cases", []))
-    nc = len(test_cases.get("negative_cases", []))
-    print(f"\n[OK] Generated {hp} happy path, {ec} edge, {nc} negative test cases.", file=sys.stderr)
+    print(
+        f"\n[OK] Generated {len(suite.happy_path)} happy path, {len(suite.edge_cases)} edge, "
+        f"{len(suite.negative_cases)} negative test cases.",
+        file=sys.stderr,
+    )
 
 
 if __name__ == "__main__":
