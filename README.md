@@ -20,7 +20,7 @@ Feed it Acceptance Criteria, get back structured JSON containing:
 ## Quick start
 
 ```bash
-git clone https://github.com/rooy15/agentic-qa-journey.git
+git clone https://github.com/GoroJR/agentic-qa-journey.git
 cd agentic-qa-journey
 pip install -r requirements.txt
 
@@ -59,7 +59,7 @@ A few real-world LLM engineering lessons baked into this code:
 
 ## Why this matters
 
-Test case design is one of the highest-leverage tasks in QA — and one of the most automatable with LLMs. This is a working prototype of the **AI Acceptance Criteria + Test Case Generation pilot** I'm proposing internally at TCS for the Choice Hotels engagement.
+Test case design is one of the highest-leverage tasks in QA — and one of the most automatable with LLMs. This is a working prototype of an **AI-assisted acceptance criteria to test case workflow** for enterprise QA teams.
 
 ## Roadmap
 
